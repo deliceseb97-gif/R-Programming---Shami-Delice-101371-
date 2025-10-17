@@ -1,0 +1,178 @@
+---
+title: "Class 4 R Script"
+author: 'Shami Delice (ID: 101371)'
+date: "`16/10/2025`"
+---
+
+# Topic: Regression, Simulation, and Data Visualization in R
+
+## Simple Linear Regression
+```{r simple-linear-regression, echo=TRUE}
+data("women")
+fit <- lm(weight ~ height, data = women)
+summary(fit)
+
+women$weight
+fitted(fit)
+residuals(fit)
+
+plot(women$height, women$weight, 
+     xlab = "Height (in inches)", 
+     ylab = "Weight (in pounds)")
+abline(fit)
+```
+
+## Polynomial Regression
+```{r polynomial-regression, echo=TRUE}
+fit2 <- lm(weight ~ height + I(height^2), data = women)
+summary(fit2)
+
+plot(women$height, women$weight,
+     xlab = "Height (in inches)",
+     ylab = "Weight (in pounds)")
+lines(women$height, fitted(fit2))
+```
+
+## Regression Diagnostics
+```{r regression-diagnostics, echo=TRUE}
+fit <- lm(weight ~ height, data = women)
+par(mfrow = c(2,2))
+plot(fit)
+
+fit2 <- lm(weight ~ height + I(height^2), data = women)
+par(mfrow = c(2,2))
+plot(fit2)
+
+newfit <- lm(weight ~ height + I(height^2), data = women[-c(13,15),])
+par(mfrow = c(2,2))
+plot(newfit)
+```
+
+## Exploration of mtcars Data
+```{r mtcars-regression, echo=TRUE}
+plot(mpg ~ wt, data = mtcars)
+model <- lm(mpg ~ wt, data = mtcars)
+abline(model)
+summary(model)
+
+predict(model, newdata = data.frame(wt = 6))
+```
+
+## Simulation in R
+```{r simulation, echo=TRUE}
+x <- seq(-3, 3, by = 0.1)
+q <- seq(-3, 3, by = 0.1)
+p <- seq(0, 1, by = 0.1)
+n <- 10
+
+dnorm(x, mean = 0, sd = 1, log = FALSE)
+pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)
+qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)
+rnorm(n, mean = 0, sd = 1)
+
+x <- rnorm(10)
+pnorm(2)
+x <- rnorm(10, 20, 2)
+```
+
+## Setting Random Seed
+```{r random-seed, echo=TRUE}
+set.seed(1)
+rnorm(5)
+rnorm(5)
+set.seed(1)
+```
+
+## Simulate a Linear Model
+```{r simulate-linear-model, echo=TRUE}
+set.seed(20)
+x <- rnorm(100)
+e <- rnorm(100, 0, 2)
+y <- 0.5 - 2 * x + e
+plot(x, y)
+
+set.seed(1)
+sample(1:10, 4)
+sample(1:10, 4)
+sample(letters, 5)
+sample(1:10)
+sample(1:10)
+sample(1:10, replace = TRUE)
+```
+
+## Data Visualization
+```{r data-visualization, echo=TRUE}
+country <- c("Australia","Austria","Belgium","Canada","Denmark","Finland",
+             "France","Germany","Greece","Ireland","Italy","Japan",
+             "Netherland","New Zealand","Norway","Portugal","Spain","Sweden",
+             "Switzerland","UK","USA")
+
+Income.inequality <- c(7.0,4.8,4.6,5.6,4.3,3.7,5.6,5.2,6.2,6.0,6.7,3.4,5.3,
+                       6.8,3.9,8.0,5.5,4.0,5.7,7.2,8.6)
+
+Index.HS <- c(0.07,0.01,-0.23,-0.07,-0.19,-0.43,0.05,-0.06,0.38,0.25,-0.12,
+              -1.26,-0.51,0.29,-0.63,1.18,-0.30,-0.83,-0.46,0.79,2.02)
+
+GDP_WB <- c(45926,47682,43435,45066,45537,30676,39328,46401,26851,49393,
+            35463,36319,48253,37679,65615,28760,33629,45297,59540,40233,54630)
+
+data.21 <- data.frame(country, Income.inequality, Index.HS, GDP_WB)
+
+plot(data.21[c("Income.inequality","Index.HS")])
+
+Index_inequality.df <- data.21[c("Income.inequality","Index.HS")]
+str(Index_inequality.df)
+
+(country <- data.21[,"country"])
+(country.2 <- data.21["country"])
+str(country)
+str(country.2)
+
+plot(Index_inequality.df, pch=20)
+text(Index_inequality.df, labels=country, pos=4, cex=0.8)
+
+which(country %in% c("Austria","Denmark","Germany","Netherland"))
+text.left <- which(country %in% c("Austria","Denmark","Germany","Netherland"))
+text.right <- setdiff(1:nrow(data.21), text.left)
+pos.text <- ifelse(1:nrow(data.21) %in% text.left, 2, 4)
+
+plot(Index_inequality.df, pch=20, col="red", xlim=c(3,9), ylim=c(-1.5,2.5))
+text(Index_inequality.df, labels=country, pos=pos.text, cex=0.8)
+
+which(country %in% "Germany")
+text.up <- which(country %in% "Germany")
+text.left <- setdiff(1:nrow(data.21), c(text.right, text.up))
+pos.text <- ifelse(1:nrow(data.21) %in% text.up, 3,
+                   ifelse(1:nrow(data.21) %in% text.left, 2, 4))
+
+plot(Index_inequality.df, pch=20, col="red", xlim=c(3,9), ylim=c(-1.5,2.5), ann=FALSE)
+text(Index_inequality.df, labels=country, pos=pos.text, cex=0.8)
+main.title <- "Income inequality vs Index of Health and Social problems"
+x.lab <- "Income inequality (5th Ratio)"
+y.lab <- "Index of Health and Social problems"
+title(main=main.title, xlab=x.lab, ylab=y.lab)
+mtext(c("Better","Worse"), side=2, at=c(-1.8,2.8), las=1)
+text(x=5, y=1.5, labels=paste("r=", round(cor(Index_inequality.df[1],
+                                              Index_inequality.df[2]), digits=2)))
+lm.ineq <- lm(Index.HS ~ Income.inequality, data=Index_inequality.df)
+abline(lm.ineq$coef, col="blue")
+```
+
+## Simulation with Matrices
+```{r simulation-with-matrices, echo=TRUE}
+rm(list = ls(all = TRUE))
+n <- 30
+M <- 1
+p <- 5
+z <- matrix(runif(n * p, 0, 1), nrow=n, ncol=p)
+x <- 3 * cos(z[,1]) + 2 * rnorm(n)
+x <- as.matrix(x)
+beta.true <- rep(1, ncol(x))
+
+hfun1 <- function(zvec)
+  (10*cos(zvec[1]) - 15*(zvec[2])^2 + 10*exp(-zvec[3])*zvec[4]
+   - 8*sin(zvec[5])*cos(zvec[3]) + 20*(zvec[1]*zvec[5]))
+h1 <- apply(z, 1, hfun1)
+eps <- rnorm(n)
+y <- x * beta.true + h1 + eps
+```
