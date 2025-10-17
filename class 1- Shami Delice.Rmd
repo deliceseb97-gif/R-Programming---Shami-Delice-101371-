@@ -1,0 +1,154 @@
+---
+title: "Class 1-Shami Dlice"
+author: "Shami Delice"
+date: "2025-10-17"
+output: html_document
+---
+
+
+# Vectors
+
+```{r vectors}
+age <- c(20,35,32,29)
+summary(age)
+
+age <- c(35,24,18,24)
+mean(age)
+
+x <- c(TRUE, FALSE)
+letters_vec <- c("a","b","c")
+gender <- c("M","F","F","M")
+int_vec <- 9:29
+complex_vec <- c(1+0i, 2+4i)
+```
+
+# Matrices
+
+```{r matrices}
+x <- matrix(1:6, nrow=2, ncol=3)
+y <- matrix(1:6, nrow=3, ncol=2)
+x %*% y
+```
+
+# Lists
+
+```{r lists}
+x <- list(1,"a",TRUE,1+4i)
+x
+```
+
+# Factors
+
+```{r factors}
+x <- factor(c("yes","yes","no","yes","no"))
+```
+
+# Handling Missing Values
+
+```{r missing-values}
+x <- c(1,2,NA,10,3)
+is.na(x)
+
+x <- c(1,2,4,"NA",5)
+bad <- is.na(x)
+x[!bad]
+
+x <- c(1,2,NA,4,NA,5)
+y <- c("a","b",NA,"d",NA,"f")
+good <- complete.cases(x, y)
+good
+```
+
+# Coercion
+
+```{r coercion}
+sum(c(TRUE, TRUE, FALSE, FALSE, FALSE))
+```
+
+# Creating Data Frames
+
+```{r dataframe}
+studentID <- c(1,2,3,4,5)
+math_score <- c(12,17,10,9,NA)
+gender <- c("M","F","M","M","F")
+it_score <- c(13,18,11,10,19)
+
+scoredata <- data.frame(studentID, gender, math_score, it_score)
+scoredata
+```
+
+# Data Importation
+
+```{r import}
+data_class <- read.table("C:/Users/Pacy/OneDrive/Desktop/Bigdatacourse/class_data.txt", header=TRUE)
+head(data_class)
+tail(data_class)
+data_class[10:20,]
+summary(data_class)
+str(data_class)
+```
+
+# Summary Statistics
+
+```{r summary-stats}
+apply(data_class, 2, mean)
+apply(data_class, 2, sd)
+c(mean(data_class$HEIGHT), sd(data_class$HEIGHT))
+c(mean(data_class$WEIGHT), sd(data_class$WEIGHT))
+```
+
+# Scatter Plot & Linear Model
+
+```{r scatter-lm}
+plot(WEIGHT~HEIGHT, data=data_class)
+cor(data_class$HEIGHT, data_class$WEIGHT)
+
+data_lm <- lm(WEIGHT~HEIGHT, data=data_class)
+summary(data_lm)
+abline(data_lm)
+lines(lowess(data_class$HEIGHT, data_class$WEIGHT), col="blue")
+```
+
+# BMI Calculation
+
+```{r bmi}
+attach(data_class)
+BMI <- round(WEIGHT / (HEIGHT/100)^2, 2)
+head(cbind(data_class, BMI), 5)
+tail(cbind(data_class, BMI), 10)
+summary(BMI)
+stem(BMI, scale=2)
+```
+
+# Categorical Data Analysis: iris dataset
+
+```{r iris-analysis}
+data("iris")
+head(iris)
+by(iris$Petal.Length, iris$Species, mean)
+by(iris$Petal.Length, iris$Species, sd)
+by(iris$Petal.Length, iris$Species, summary)
+
+boxplot(iris$Sepal.Length ~ iris$Species, data=iris, main="Sepal Length by Species")
+```
+
+# Relationship between Categorical Variables: UCBAdmissions
+
+```{r ucbadmissions}
+ucba <- data.frame(UCBAdmissions)
+head(ucba)
+
+cross <- xtabs(Freq ~ Gender + Admit, data=ucba)
+cross
+prop.table(cross, 2)
+```
+
+# Bar Charts
+
+```{r bar-charts}
+dat <- read.table(text="ProdA ProdB ProdC ProdD
+1 110 50 60 70
+2 212 50 80 65", header=TRUE)
+barplot(as.matrix(dat), beside=FALSE, col=c("Red","green"))
+
+```
